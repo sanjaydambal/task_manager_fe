@@ -39,12 +39,18 @@ const TaskList = () => {
   // Update Task Status
   const updateTask = async (id, newStatus) => {
     try {
+      const taskToUpdate = tasks.find((task) => task.id === id);
+      if (!taskToUpdate) return;
+
       await axios.put(`http://localhost:5000/tasks/${id}`, {
+        title: taskToUpdate.title,
+        description: taskToUpdate.description,
         status: newStatus,
       });
+
       setTasks(
         tasks.map((task) =>
-          task._id === id ? { ...task, status: newStatus } : task
+          task.id === id ? { ...task, status: newStatus } : task
         )
       );
     } catch (err) {
@@ -56,7 +62,7 @@ const TaskList = () => {
   const deleteTask = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/tasks/${id}`);
-      setTasks(tasks.filter((task) => task._id !== id));
+      setTasks(tasks.filter((task) => task.id !== id));
     } catch (err) {
       console.error(err);
     }
@@ -98,7 +104,7 @@ const TaskList = () => {
       ) : (
         tasks.map((task) => (
           <div
-            key={task._id}
+            key={task.id}
             className="p-4 mb-2 border rounded flex justify-between items-center"
           >
             <div>
@@ -118,14 +124,14 @@ const TaskList = () => {
               {task.status !== "Completed" && (
                 <button
                   className="bg-green-500 text-white px-3 py-1 rounded"
-                  onClick={() => updateTask(task._id, "Completed")}
+                  onClick={() => updateTask(task.id, "Completed")}
                 >
                   Complete
                 </button>
               )}
               <button
                 className="bg-red-500 text-white px-3 py-1 rounded"
-                onClick={() => deleteTask(task._id)}
+                onClick={() => deleteTask(task.id)}
               >
                 Delete
               </button>
